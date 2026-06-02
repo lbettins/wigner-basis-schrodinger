@@ -6,9 +6,10 @@ Developed in support of **UMRR** — **Uncoupled Mode (approximation) for Rigid 
 
 ## Layout
 
-- `armandham/hamiltonian.cpp` — main driver (basis convergence, thermodynamics)
-- `armandham/cx_ham.cpp` — earlier variant
-- `gaunt_coeffs.cpp` — prototype using Gaunt coefficients (`wigner-cpp`)
+- `src/hamiltonian.cpp` — main driver (basis convergence, thermodynamics)
+- `src/aux/gaunt_coeffs.cpp` — auxiliary/prototype using Gaunt coefficients (`wigner-cpp`)
+- `src/legacy/cx_ham.cpp` — legacy earlier variant (kept for reference)
+- `include/data_dir.hpp` — shared data-directory resolution helper
 - `data/` — input sets per system (Lebedev quadrature grids, etc.)
 
 ## Data (per system directory under `data/`)
@@ -26,25 +27,29 @@ Developed in support of **UMRR** — **Uncoupled Mode (approximation) for Rigid 
 Requires [Armadillo](http://arma.sourceforge.net/), OpenMP-capable Clang, and the `wignerSymbols` library (`armandham`).
 
 ```bash
-cd armandham
 make
 ```
 
-The root `Makefile` builds `gaunt` from `gaunt_coeffs.cpp` and expects a local `wigner-cpp` install; paths in the Makefiles may need editing for your machine.
+Targets:
+
+- `make` (or `make ham`) builds `bin/ham` from `src/hamiltonian.cpp`
+- `make gaunt_aux` builds `bin/gaunt_aux` from `src/aux/gaunt_coeffs.cpp` (requires `wigner-cpp`)
 
 ## Run
 
 ```text
-./ham <systemName> <Lmax_start> <free_rotor> <T_K>
+./bin/ham <systemName> <Lmax_start> <free_rotor> <temperature_K>
 ```
 
 - `systemName` — subdirectory name under the data path (e.g. `lebedev110`)
+- `Lmax_start` — initial basis cutoff; code increments until convergence
 - `free_rotor` — `0` use `a.txt`; `1` kinetic terms only
+- `temperature_K` — runtime CLI argument (`argv[4]`) in Kelvin
 
 Example:
 
 ```bash
-./ham lebedev110 5 0 300
+./bin/ham lebedev110 5 0 300
 ```
 
 ## Data path
@@ -55,7 +60,12 @@ Input files are read from `data/` at the repo root. Resolution order:
 2. Compile-time `WIGNER_BASIS_DATA_DIR` (set by the Makefiles)
 3. `data`, `../data`, or `../../data` relative to the working directory
 
-Run `ham` from the repo root, or from `armandham/` after `make` (the Makefile embeds the absolute path to `data/`).
+Auxiliary prototype:
+
+```bash
+make gaunt_aux
+./bin/gaunt_aux
+```
 
 ## License
 

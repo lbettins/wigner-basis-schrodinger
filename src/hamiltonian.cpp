@@ -160,16 +160,6 @@ Col<double> getEnergyEigvals(Mat<complex<double>>& H) {
     Mat<complex<double>> eigvec;
     //Col<double> eigvals = eig_sym(H);
     eig_sym(eigvals, eigvec, H);
-    //for (int i = 0; i < eigvec.n_cols; i++) {
-    //    complex<double> result (0,0);
-    //    for (int j = 0;  j < eigvec.n_rows; j++) {
-    //        complex<double> c = eigvec(i,j);
-    //        complex<double> c2 = abs(c*c);
-    //        result += c2;
-    //    }
-    //    cout << endl << "Result: " << result << endl;
-    //}
-    ////eigvec.print();
     return eigvals;
 }
 
@@ -186,31 +176,19 @@ vector<double> getThermo(double T, Col<double>& eigvals, double sym, double refE
     double b = pow(kB * T, -1) * EHARTREE;
     double Q = 0;
     double U = 0;
-    double tab_count = 0;
-    char space;
     ofstream efile;
     efile.open("efile.txt");
     for (double e : eigvals) {
         double E = e - refE;
         U += E*exp(-b*E);
         Q += exp(-b*E);
-        if (tab_count > 9) {
-            space = '\n';
-            tab_count = 0;
-        } else {
-            space = '\t';
-            tab_count++;
-        }
         efile << E << endl;
-        //cout << E*HARTREE2KCALMOL << space;
     }
     efile.close();
-    //cout << endl;
     U /= Q;
     Q /= sym;
     double F = -pow(b, -1) * log(Q);
     double S = (U-F)/T;
-    //double ZPE = HARTREE2KCALMOL*eigvals[0];
     double ZPE = eigvals[0];
     U *= HARTREE2KCALMOL;
     S *= HARTREE2KCALMOL*1000;
@@ -219,57 +197,40 @@ vector<double> getThermo(double T, Col<double>& eigvals, double sym, double refE
 }
 
 Mat<complex<double>> getHamiltonian(int lmax, double Ix, double Iy, double Iz, vector<complex<double>>& a, int seriesLmax) {
-    /* Construct the Hamiltonian Matrix
-     * Inputs:  lmax;   the maximum quantum number forthe spherical basis
-     *             I;   the gas-phase moments of inertia [=] amu*Å^2
-     *             a;   coefficients for potential in the Wigner D Matrix basis
-     * Outputs:    H;   the Hamiltonian matrix (Hermitian) [=] Hartree
-     */
     long double size = (lmax+1)*(2*lmax+1)*(2*lmax+3)/3.0;
     Mat<complex<double>> H = zeros<cx_mat>(size, size);
 
-    // Define rotational constants:
     double B = HBAR1*HBAR2/(2.0*Iz);
     double A = HBAR1*HBAR2/(2.0*Iy);
     double C = HBAR1*HBAR2/(2.0*Ix);
     double kap = (A == B && A == C) ? 0 : (2.0*B - (A+C)) / (A-C);
-    //#pragma omp parallel
     {
         unsigned long long i = 0;
-        //#pragma omp for
         for (int el = 0; el < lmax+1; el++) {
             for (int m = -el; m <= el; m++) {
                 for (int k = -el; k <= el; k++) {
-                    //unsigned long long i = (4*el*el*el/3.0) + 2*el*el + (5*el/3.0) + 2*m*el + m + k;
                     unsigned long long j = 0;
                     for (int ell = 0; ell < lmax+1; ell++) {
                         for (int mm = -ell; mm <= ell; mm++) {
                             for (int kk = -ell; kk <= ell; kk++) {
-                                //unsigned long long j = (4*ell*ell*ell/3.0) + 2*ell*ell + (5*ell/3.0) + 2*mm*ell + mm + kk;
                                 if (j > i) {
                                     j++;
                                     continue;
                                 }
                                 complex<double> Vij (0,0);
                                 if (seriesLmax != 0) {
-                                    // Solve Potential Component of Matrix by
-                                    // iterating over Clebsch-Gordan coefficients (if applicable)
                                     int ind = 0;
                                     double sign = pow(-1.0, mm+kk);
                                     for (int L = 0; L < seriesLmax+1; L++) {
                                         for (int M = -L; M <= L; M++) {
-                                            //double Wlm = WignerSymbols::wigner3j(L,el,ell,M,m,-mm);
                                             double Wlm = WignerSymbols::wigner3j(el,L,ell,m,M,-mm);
                                             for (int K = -L; K <= L; K++) {
                                                 if (Wlm == 0) {
                                                     ind++;
                                                     continue;
                                                 }
-                                                //double Wlk = WignerSymbols::wigner3j(L,el,ell,K,k,-kk);
                                                 double Wlk = WignerSymbols::wigner3j(el,L,ell,k,K,-kk);
-                                                //double val = 8*M_PI*M_PI*sign*Wlm*Wlk;
                                                 double val = sqrt(2*ell+1)*sqrt(2*el+1)*sign*Wlm*Wlk;
-                                                //double val = sign*Wlm*Wlk;
                                                 Vij += a.at(ind) * val;
                                                 ind++;
                                             }
@@ -279,9 +240,6 @@ Mat<complex<double>> getHamiltonian(int lmax, double Ix, double Iy, double Iz, v
                                         cout << "LOOP ABORTED BEFORE END OF ARRAY" << endl;
                                     }
                                 }
-                                // Solve the Kinetic Component resulting from raising and lowering operators
-                                // (and add the potential component to the diagonal)
-                                //Vij *= 0.1;
                                 if (i == j) {
                                     H(i,j) += complex<double> (0.5*(A+C)*el*(el+1) + 0.5*(A-C)*kap*k*k + Vij.real(), 0);
                                     if (k+2 <= el) {
@@ -293,7 +251,6 @@ Mat<complex<double>> getHamiltonian(int lmax, double Ix, double Iy, double Iz, v
                                     H(i,j) += Vij;
                                     H(j,i) += conj(Vij);
                                 }
-                                //cout << "< " << i << "|V|" << j << " >" << "\t=\t" << Vij << '\t' << conj(Vij) << endl;
                                 j++;
                             }
                         }
@@ -302,9 +259,7 @@ Mat<complex<double>> getHamiltonian(int lmax, double Ix, double Iy, double Iz, v
                 }
             }
         }
-    } // end parallel
-    //H.print("H = ");
-    //cout << "Constructed matrix with LMAX " << lmax << '.' << endl;
+    }
     return H;
 }
 
@@ -333,7 +288,6 @@ vector<complex<double>> getWignerCoeffs(string sysname, bool freeRotor) {
         return a;
     }
     string dirname = getDirectory(sysname);
-    //string filename = dirname+"/aimag.txt";
     string filename = dirname+"/a.txt";
     ifstream is(filename);
     complex<double> val;
@@ -373,19 +327,12 @@ string getDirectory(string sysname) {
 }
 
 SpMat<double> getSparseHam(int lmax, double Ix, double Iy, double Iz, vector<complex<double>>& a) {
-    /* Construct the Hamiltonian Matrix
-     * Inputs:  lmax;   the maximum quantum number forthe spherical basis
-     *             I;   the gas-phase moments of inertia [=] amu*Å^2
-     * Outputs:    H;   the Hamiltonian matrix (Hermitian) [=] Hartree
-     */
     unsigned long long size = (lmax+1)*(2*lmax+1)*(2*lmax+3)/3.0;
     SpMat<double> H = sp_mat(size, size);
 
-    // Define rotational constants:
     double B = HBAR1*HBAR2/(2.0*Iz);
     double A = HBAR1*HBAR2/(2.0*Iy);
     double C = HBAR1*HBAR2/(2.0*Ix);
-
     double kap = (A == B && A == C) ? 0 : (2.0*B - (A+C)) / (A-C);
     #pragma omp parallel
     {
@@ -420,27 +367,19 @@ SpMat<double> getSparseHam(int lmax, double Ix, double Iy, double Iz, vector<com
                 }
             }
         }
-    } // end parallel
+    }
     return H;
 }
 
 double getSparseQ(double T, SpMat<double>& H, int sym) {
-    /* Solve the Eigenvalues forSparse Matrix
-     * Inputs:  T;  the temperature [=] K
-     *          H;  the (sparse) Hamiltonian matrix [=] Hartree
-     */
     double b = pow(kB * T, -1) * EHARTREE;
     vec eigval;
     mat eigvec;
-    //cout << "Number of rows: " << H.n_rows << endl;
     eigs_sym(eigval, eigvec, H, H.n_rows-1);
     double Q = 0;
-    //cout << "Eigenvalues: " << endl;
     for (double e : eigval) {
-        //cout << e << '\t';
         Q += exp(-b * e);
     }
-    //cout << "Q predicted by eigs_sym: " << Q/sym << endl;
     return double(Q/sym);
 }
 
@@ -458,11 +397,9 @@ Col<double> getCoefficients(string sysname) {
         if (!(is >> theta >> phi >> v)) {
             break;
         }
-        //cout << theta << '\t' << phi << '\t' << v << endl;
         my_vec.push_back(v);
     }
     Col<double> cvec = conv_to<vec>::from(my_vec);
-    //cvec.print();
     is.close();
     return cvec;
 }
