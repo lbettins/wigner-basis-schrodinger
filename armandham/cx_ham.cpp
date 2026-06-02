@@ -10,6 +10,7 @@
 #include <string>
 #include <armadillo>
 #include <vector>
+#include "data_dir.hpp"
 #include "wignerSymbols.h"
 //#include "wigner/gaunt.hpp"
 
@@ -60,7 +61,7 @@ int main(int argc, char** argv) {
     for (double i : Ivec) {
         std::cout << i << '\t';
     }
- 
+
     /*
      *  Rotational Constants + Classical Partition Function
      */
@@ -68,10 +69,10 @@ int main(int argc, char** argv) {
     double A = HBAR1*HBAR2/(2.0*Ivec[1]);
     double C = HBAR1*HBAR2/(2.0*Ivec[0]);
     //std::cout << "kB T / Hartree:\n" << kB * 298 / EHARTREE << std::endl;
-    std::cout << "Qapprox = " << sqrt(M_PI)/sigma * sqrt(pow(kB*300/EHARTREE, 3) / (A*B*C)) << std::endl;  
+    std::cout << "Qapprox = " << sqrt(M_PI)/sigma * sqrt(pow(kB*300/EHARTREE, 3) / (A*B*C)) << std::endl;
 
     /*
-     *  Dense Matrix Implementation 
+     *  Dense Matrix Implementation
      */
     bool converge = false;
     bool dense = true;
@@ -91,7 +92,7 @@ int main(int argc, char** argv) {
             try {
                 Q = getPartitionFunction(298.15, H, sigma);
             } catch (const std::logic_error& e) {
-                //std::cout << "Required Memory is " << size*size*8*1e-9 << " Gb." << std::endl; 
+                //std::cout << "Required Memory is " << size*size*8*1e-9 << " Gb." << std::endl;
                 //std::cout << "Memory problem caused failure. Switching to sparse implementation." << std::endl;
                 //dense = false;
                 throw e;
@@ -153,7 +154,7 @@ Mat<complex<double>> getHamiltonian(int lmax, double Ix, double Iy, double Iz, s
      * Inputs:  lmax;   the maximum quantum number forthe spherical basis
      *             I;   the gas-phase moments of inertia [=] amu*Å^2
      *             a;   coefficients for potential in the Wigner D Matrix basis
-     * Outputs:    H;   the Hamiltonian matrix (Hermitian) [=] Hartree 
+     * Outputs:    H;   the Hamiltonian matrix (Hermitian) [=] Hartree
      */
     long double size = (lmax+1)*(2*lmax+1)*(2*lmax+3)/3.0;
     Mat<complex<double>> H = zeros<mat>(size, size);
@@ -260,21 +261,18 @@ std::vector<double> getMomentOfInertia(std::string sysname) {
 }
 
 std::string getDirectory(std::string sysname) {
-    //std::string dirname = "/Users/lancebettinson/Thesis/umrr/code/hamiltonian-cpp/data";
-    std::string dirname = "/global/scratch/lbettins/rotational-hamiltonian/data";
     if (sysname == "") {
-        std::string sysname;
         std::cout << "Enter system name:" << std::endl;
         std::cin >> sysname;
     }
-    return dirname+'/'+sysname;
+    return dataRoot() + '/' + sysname;
 }
 
 SpMat<complex<double>> getSparseHam(int lmax, double Ix, double Iy, double Iz, std::vector<double>& a) {
     /* Construct the Hamiltonian Matrix
      * Inputs:  lmax;   the maximum quantum number forthe spherical basis
      *             I;   the gas-phase moments of inertia [=] amu*Å^2
-     * Outputs:    H;   the Hamiltonian matrix (Hermitian) [=] Hartree 
+     * Outputs:    H;   the Hamiltonian matrix (Hermitian) [=] Hartree
      */
     unsigned long long size = (lmax+1)*(2*lmax+1)*(2*lmax+3)/3.0;
     SpMat<complex<double>> H = sp_mat(size, size);

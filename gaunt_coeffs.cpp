@@ -7,6 +7,7 @@
 #include <string>
 #include <armadillo>
 #include <vector>
+#include "data_dir.hpp"
 #include "wigner/gaunt.hpp"
 
 using namespace std::chrono;
@@ -22,13 +23,11 @@ static const double HBAR2 = HBAR * 1e20 / AMU;  // amu.Å^2/s
 static const double SCH4 = 186.25; // J/mol.K
 
 std::string getDirectory(std::string sysname="METH-CHA") {
-    std::string dirname = "/Users/lancebettinson/Thesis/umrr/code/hamiltonian-cpp/data";
     if (sysname == "") {
-        std::string sysname;
         std::cout << "Enter system name:" << std::endl;
         std::cin >> sysname;
     }
-    return dirname+'/'+sysname;
+    return dataRoot() + '/' + sysname;
 }
 
 Col<double> getCoefficients() {
@@ -76,7 +75,7 @@ double getReducedI(std::vector<double> Ivec) {
     }
     return pow(result, -1);
 }
-    
+
 double getPartitionFunction(double T, Mat<double>& H) {
     /* Solve the Eigenvalues
      * Inputs:  T;  the temperature [=] K
@@ -110,7 +109,7 @@ Mat<double> getHamiltonian(int lmax, double I, Col<double>& ahat) {
      * Inputs:  lmax;   the maximum quantum number for the spherical basis
      *             I;   the reduced gas-phase moment of inertia [=] amu*Å^2
      *          ahat;   the number of fitting coefficients to the potential [=] Hartree
-     * Outputs:    H;   the Hamiltonian matrix (Hermitian) [=] Hartree 
+     * Outputs:    H;   the Hamiltonian matrix (Hermitian) [=] Hartree
      */
     int Lmax = sqrt(ahat.size());
     Mat<double> H = zeros<mat>(lmax*lmax, lmax*lmax);
@@ -130,7 +129,7 @@ Mat<double> getHamiltonian(int lmax, double I, Col<double>& ahat) {
                     int i = ll*ll + ll + mm;
                     if (j < i) {
                         continue;
-                    } 
+                    }
                     for (int K = -ll; K < ll+1; K++) {
                     for (int L = 0; L < Lmax; L++) {
                         for (int M = -L; M < L+1; M++) {

@@ -10,6 +10,7 @@
 #include <string>
 #include <armadillo>
 #include <vector>
+#include "data_dir.hpp"
 #include "wignerSymbols.h"
 //#include "wigner/gaunt.hpp"
 
@@ -73,7 +74,7 @@ int main(int argc, char** argv) {
         cout << i << '\t';
     }
     cout << endl;
- 
+
     /*
      *  Rotational Constants + Classical Partition Function
      */
@@ -81,10 +82,10 @@ int main(int argc, char** argv) {
     double A = HBAR1*HBAR2/(2.0*Ivec[1]);
     double C = HBAR1*HBAR2/(2.0*Ivec[0]);
     //cout << "kB T / Hartree:\n" << kB * 298 / EHARTREE << endl;
-    cout << "Qapprox = " << sqrt(M_PI)/sigma * sqrt(pow(kB*T/EHARTREE, 3) / (A*B*C)) << endl;  
+    cout << "Qapprox = " << sqrt(M_PI)/sigma * sqrt(pow(kB*T/EHARTREE, 3) / (A*B*C)) << endl;
 
     /*
-     *  Dense Matrix Implementation 
+     *  Dense Matrix Implementation
      */
     bool converge = false;
     bool dense = true;
@@ -97,7 +98,7 @@ int main(int argc, char** argv) {
     double Uprev = 0;
     double Sprev = 0;
     vector<double> thermo;
-    cout << left << setw(15) << "Lmax" << setw(15) << "Q" << setw(15) << "ZPE [Hartree]" << setw(15) << 
+    cout << left << setw(15) << "Lmax" << setw(15) << "Q" << setw(15) << "ZPE [Hartree]" << setw(15) <<
         "U [kcal/mol]" << setw(15) << "S [cal/mol.K]" << setw(20) <<
         "Constr.Time [s]" << setw(16) << "Diag.Time [s]" << setw(16) << "Time [s]" << setw(16) << "dQ" << endl;
     auto start = chrono::high_resolution_clock::now();
@@ -131,8 +132,8 @@ int main(int argc, char** argv) {
         double dQ = fabs(Q-Qprev);
         double dU = fabs(U-Uprev);
         double dS = fabs(S-Sprev);
-        cout << left << setw(15) << lmax << setw(15) << Q << setw(15) << ZPE << setw(15) 
-            << U << setw(15) << S << setw(20) << qmatDur.count()/1e6 << setw(16) 
+        cout << left << setw(15) << lmax << setw(15) << Q << setw(15) << ZPE << setw(15)
+            << U << setw(15) << S << setw(20) << qmatDur.count()/1e6 << setw(16)
             << qdiagDur.count()/1e6 << setw(16) <<
             qduration.count()/1e6 << setw(16) << dQ << endl;
         if (dQ < 1e-4 && dS < 1e-2 && dU < 1e-3) {
@@ -173,7 +174,7 @@ Col<double> getEnergyEigvals(Mat<complex<double>>& H) {
 }
 
 vector<double> getThermo(double T, Col<double>& eigvals, double sym, double refE) {
-    /* Solve the relevant thermodynamics 
+    /* Solve the relevant thermodynamics
      * Inputs:  T;          the temperature [=] K
      *          eigvals;    the energy microstates
      *          sym;        the symmetry number
@@ -222,7 +223,7 @@ Mat<complex<double>> getHamiltonian(int lmax, double Ix, double Iy, double Iz, v
      * Inputs:  lmax;   the maximum quantum number forthe spherical basis
      *             I;   the gas-phase moments of inertia [=] amu*Å^2
      *             a;   coefficients for potential in the Wigner D Matrix basis
-     * Outputs:    H;   the Hamiltonian matrix (Hermitian) [=] Hartree 
+     * Outputs:    H;   the Hamiltonian matrix (Hermitian) [=] Hartree
      */
     long double size = (lmax+1)*(2*lmax+1)*(2*lmax+3)/3.0;
     Mat<complex<double>> H = zeros<cx_mat>(size, size);
@@ -364,21 +365,18 @@ vector<double> getMomentOfInertia(string sysname) {
 }
 
 string getDirectory(string sysname) {
-    string dirname = "/Users/lancebettinson/Thesis/umrr/code/hamiltonian-cpp/data";
-    //string dirname = "/global/scratch/lbettins/rotational-hamiltonian/data";
     if (sysname == "") {
-        string sysname;
         cout << "Enter system name:" << endl;
         cin >> sysname;
     }
-    return dirname+'/'+sysname;
+    return dataRoot() + '/' + sysname;
 }
 
 SpMat<double> getSparseHam(int lmax, double Ix, double Iy, double Iz, vector<complex<double>>& a) {
     /* Construct the Hamiltonian Matrix
      * Inputs:  lmax;   the maximum quantum number forthe spherical basis
      *             I;   the gas-phase moments of inertia [=] amu*Å^2
-     * Outputs:    H;   the Hamiltonian matrix (Hermitian) [=] Hartree 
+     * Outputs:    H;   the Hamiltonian matrix (Hermitian) [=] Hartree
      */
     unsigned long long size = (lmax+1)*(2*lmax+1)*(2*lmax+3)/3.0;
     SpMat<double> H = sp_mat(size, size);
