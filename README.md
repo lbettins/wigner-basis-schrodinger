@@ -6,7 +6,15 @@ Developed in support of **UMRR** — **Uncoupled Mode (approximation) for Rigid 
 
 ## Rotational Hamiltonian
 
-The rigid-rotor Hamiltonian is built in the Wigner / symmetric-top basis \(\lvert lmk\rangle\) as the sum of an asymmetric-top kinetic operator and an orientation-dependent potential expanded in Wigner \(D\)-functions.
+The rigid-rotor Hamiltonian is built in the Wigner / symmetric-top basis \(\lvert lmk\rangle\) as the sum of an asymmetric-top kinetic operator and an orientation-dependent potential.
+
+The potential is represented by expanding \(V(\phi,\theta,\chi)\) in Wigner \(D\)-matrix elements,
+
+$$
+V(\phi,\theta,\chi)=\sum_{LMK}a_{LMK}\,D^{L}_{MK}(\phi,\theta,\chi)\,,
+$$
+
+and determining the coefficients \(a_{LMK}\) by regression: sampled energies on an Euler-angle grid are fit in the least-squares sense as \(D\mathbf{a}=\mathbf{v}\), solved via the Moore–Penrose pseudoinverse from the SVD of \(D\). Those fitted coefficients are stored in `a.txt`. This construction, and the resulting rotational Schrödinger problem, are developed in Chapter IV (*Effects of Confinement on the Estimation of Enthalpies and Entropies of Small Molecule Adsorption in Zeolites*) of *Ab Initio Methods for Modeling the Thermodynamics of Molecules Adsorbed in Zeolites* (UC Berkeley, 2022) — [escholarship.org/uc/item/2k30v4kq](https://escholarship.org/uc/item/2k30v4kq).
 
 With rotational constants \(A\), \(B\), \(C\) and Ray's asymmetry parameter \(\kappa=(2B-A-C)/(A-C)\), the matrix elements are
 
@@ -46,7 +54,7 @@ Here \(\langle j_1 m_1\, j_2 m_2 | j m\rangle\) denotes a Clebsch–Gordan coeff
 | File | Contents |
 |------|----------|
 | `I.txt` | Principal moments of inertia (amu·Å²) |
-| `a.txt` | Complex Wigner-basis potential coefficients |
+| `a.txt` | Complex SVD-fitted Wigner \(D\)-matrix potential coefficients \(a_{LMK}\) |
 | `lmax.txt` | Max \(L\) in the potential expansion |
 | `s.txt` | Symmetry number \(\sigma\) (where present) |
 | `Eref.txt` | Reference energy (where present) |
