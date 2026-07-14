@@ -19,7 +19,7 @@ and determining the coefficients \(a_{LMK}\) by regression: sampled energies on 
 With rotational constants \(A\), \(B\), \(C\) and Ray's asymmetry parameter \(\kappa=(2B-A-C)/(A-C)\), the matrix elements are
 
 $$
-\begin{align*}
+\begin{aligned}
 \langle lmk|\hat{H}|l'm'k'\rangle
 &=
 \delta_{ll'}\delta_{mm'}\delta_{kk'}\Biggl[
@@ -36,7 +36,7 @@ $$
 +\sum_{LMK}a_{LMK}\sqrt{\frac{2l+1}{2l'+1}}
 \langle lm\,LM|l'm'\rangle
 \langle lk\,LK|l'k'\rangle\,.
-\end{align*}
+\end{aligned}
 $$
 
 Here \(\langle j_1 m_1\, j_2 m_2 | j m\rangle\) denotes a Clebsch–Gordan coefficient, and \(a_{LMK}\) are the complex Wigner-basis potential coefficients from `a.txt`.
@@ -56,7 +56,7 @@ $$
 In particular, the coupling factors above are evaluated as
 
 $$
-\begin{align*}
+\begin{aligned}
 \langle lm\,LM|l'm'\rangle
 &=
 (-1)^{l-L+m'}\sqrt{2l'+1}
@@ -70,8 +70,8 @@ m & M & -m'
 \begin{pmatrix}
 l & L & l' \\
 k & K & -k'
-\end{pmatrix}\,,
-\end{align*}
+\end{pmatrix}\,.
+\end{aligned}
 $$
 
 corresponding to calls `WignerSymbols::wigner3j(l, L, l', m, M, -m')` and `WignerSymbols::wigner3j(l, L, l', k, K, -k')` in `src/hamiltonian.cpp`.
