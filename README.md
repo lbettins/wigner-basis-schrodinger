@@ -41,6 +41,8 @@ $$
 
 Here $\langle j_1 m_1\, j_2 m_2 | j m\rangle$ denotes a Clebsch–Gordan coefficient, and $a_{LMK}$ are the complex Wigner-basis potential coefficients from `a.txt`.
 
+## Clebsch-Gordan coefficients
+
 In the implementation, potential matrix elements are assembled with the `wignerSymbols` library via Wigner $3j$ symbols. These are related to Clebsch–Gordan coefficients by
 
 $$
