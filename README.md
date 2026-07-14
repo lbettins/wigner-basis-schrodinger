@@ -18,25 +18,25 @@ and determining the coefficients $a_{LMK}$ by regression: sampled energies on an
 
 With rotational constants $A$, $B$, $C$ and Ray's asymmetry parameter $\kappa=(2B-A-C)/(A-C)$, the matrix elements are
 
-$$
-\begin{aligned}
-\langle lmk|\hat{H}|l'm'k'\rangle
-&=
-\delta_{ll'}\delta_{mm'}\delta_{kk'}\left[
-\frac{1}{2}(A+C)l(l+1)
-+\frac{1}{2}(A-C)\kappa k^{2}
-\right] 
-&\quad
-+\delta_{ll'}\delta_{mm'}\delta_{k,k'+2}\frac{1}{4}(C-A)
-\sqrt{[l(l+1)-k'(k'+1)][l(l+1)-(k'+1)(k'+2)]} 
-&\quad
-+\delta_{ll'}\delta_{mm'}\delta_{k,k'-2}\frac{1}{4}(C-A)
-\sqrt{[l(l+1)-k(k+1)][l(l+1)-(k+1)(k+2)]} 
-&\quad
-+\sum_{LMK}a_{LMK}\sqrt{\frac{2l+1}{2l'+1}}
-\langle lmLM|l'm'\rangle
-\langle lkLK|l'k'\rangle.
-\end{aligned}
+$$  
+\begin{aligned}  
+\langle lmk|\hat{H}|l'm'k'\rangle  
+&=  
+\delta_{ll'}\delta_{mm'}\delta_{kk'}\left[  
+\frac{1}{2}(A+C)l(l+1)  
++\frac{1}{2}(A-C)\kappa k^{2}  
+\right] \\  
+&\quad  
++\delta_{ll'}\delta_{mm'}\delta_{k,k'+2}\frac{1}{4}(C-A)  
+\sqrt{[l(l+1)-k'(k'+1)][l(l+1)-(k'+1)(k'+2)]}  \\  
+&\quad  
++\delta_{ll'}\delta_{mm'}\delta_{k,k'-2}\frac{1}{4}(C-A)  
+\sqrt{[l(l+1)-k(k+1)][l(l+1)-(k+1)(k+2)]} \\  
+&\quad  
++\sum_{LMK}a_{LMK}\sqrt{\frac{2l+1}{2l'+1}}  
+\langle lmLM|l'm'\rangle  
+\langle lkLK|l'k'\rangle.  
+\end{aligned}  
 $$
 
 Here $\langle j_1 m_1 j_2 m_2 | j m\rangle$ denotes a Clebsch–Gordan coefficient, and $a_{LMK}$ are the complex Wigner-basis potential coefficients from `a.txt`.
