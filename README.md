@@ -4,6 +4,35 @@ C++ code to build a rigid-rotor Hamiltonian in a Wigner-coupled (symmetric-top) 
 
 Developed in support of **UMRR** — **Uncoupled Mode (approximation) for Rigid Rotation**.
 
+## Rotational Hamiltonian
+
+The rigid-rotor Hamiltonian is built in the Wigner / symmetric-top basis \(\lvert lmk\rangle\) as the sum of an asymmetric-top kinetic operator and an orientation-dependent potential expanded in Wigner \(D\)-functions.
+
+With rotational constants \(A\), \(B\), \(C\) and Ray's asymmetry parameter \(\kappa=(2B-A-C)/(A-C)\), the matrix elements are
+
+$$
+\begin{align*}
+\langle lmk|\hat{H}|l'm'k'\rangle
+&=
+\delta_{ll'}\delta_{mm'}\delta_{kk'}\Biggl[
+\tfrac12(A+C)\,l(l+1)
++\tfrac12(A-C)\,\kappa\,k^{2}
+\Biggr] \\
+&\quad
++\delta_{ll'}\delta_{mm'}\delta_{k,k'+2}\,\tfrac14(C-A)
+\sqrt{\bigl[l(l+1)-k'(k'+1)\bigr]\bigl[l(l+1)-(k'+1)(k'+2)\bigr]} \\
+&\quad
++\delta_{ll'}\delta_{mm'}\delta_{k,k'-2}\,\tfrac14(C-A)
+\sqrt{\bigl[l(l+1)-k(k+1)\bigr]\bigl[l(l+1)-(k+1)(k+2)\bigr]} \\
+&\quad
++\sum_{LMK}a_{LMK}\sqrt{\frac{2l+1}{2l'+1}}
+\langle lm\,LM|l'm'\rangle
+\langle lk\,LK|l'k'\rangle\,.
+\end{align*}
+$$
+
+Here \(\langle j_1 m_1\, j_2 m_2 | j m\rangle\) denotes a Clebsch–Gordan coefficient, and \(a_{LMK}\) are the complex Wigner-basis potential coefficients from `a.txt`.
+
 ## Layout
 
 - `src/hamiltonian.cpp` — main driver (basis convergence, thermodynamics)
