@@ -41,6 +41,41 @@ $$
 
 Here \(\langle j_1 m_1\, j_2 m_2 | j m\rangle\) denotes a Clebsch–Gordan coefficient, and \(a_{LMK}\) are the complex Wigner-basis potential coefficients from `a.txt`.
 
+In the implementation, potential matrix elements are assembled with the `wignerSymbols` library via Wigner \(3j\) symbols. These are related to Clebsch–Gordan coefficients by
+
+$$
+\langle j_1 m_1\, j_2 m_2 | j_3 m_3\rangle
+=
+(-1)^{j_1-j_2+m_3}\sqrt{2j_3+1}
+\begin{pmatrix}
+j_1 & j_2 & j_3 \\
+m_1 & m_2 & -m_3
+\end{pmatrix}\,.
+$$
+
+In particular, the coupling factors above are evaluated as
+
+$$
+\begin{align*}
+\langle lm\,LM|l'm'\rangle
+&=
+(-1)^{l-L+m'}\sqrt{2l'+1}
+\begin{pmatrix}
+l & L & l' \\
+m & M & -m'
+\end{pmatrix}\,, \\
+\langle lk\,LK|l'k'\rangle
+&=
+(-1)^{l-L+k'}\sqrt{2l'+1}
+\begin{pmatrix}
+l & L & l' \\
+k & K & -k'
+\end{pmatrix}\,,
+\end{align*}
+$$
+
+corresponding to calls `WignerSymbols::wigner3j(l, L, l', m, M, -m')` and `WignerSymbols::wigner3j(l, L, l', k, K, -k')` in `src/hamiltonian.cpp`.
+
 ## Layout
 
 - `src/hamiltonian.cpp` — main driver (basis convergence, thermodynamics)
