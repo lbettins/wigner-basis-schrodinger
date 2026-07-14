@@ -6,42 +6,42 @@ Developed in support of **UMRR** — **Uncoupled Mode (approximation) for Rigid 
 
 ## Rotational Hamiltonian
 
-The rigid-rotor Hamiltonian is built in the Wigner / symmetric-top basis \(\lvert lmk\rangle\) as the sum of an asymmetric-top kinetic operator and an orientation-dependent potential.
+The rigid-rotor Hamiltonian is built in the Wigner / symmetric-top basis $|lmk\rangle$ as the sum of an asymmetric-top kinetic operator and an orientation-dependent potential.
 
-The potential is represented by expanding \(V(\phi,\theta,\chi)\) in Wigner \(D\)-matrix elements,
+The potential is represented by expanding $V(\phi,\theta,\chi)$ in Wigner $D$-matrix elements,
 
 $$
-V(\phi,\theta,\chi)=\sum_{LMK}a_{LMK}\,D^{L}_{MK}(\phi,\theta,\chi)\,,
+V(\phi,\theta,\chi)=\sum_{LMK}a_{LMK} D^{L}_{MK}(\phi,\theta,\chi).
 $$
 
-and determining the coefficients \(a_{LMK}\) by regression: sampled energies on an Euler-angle grid are fit in the least-squares sense as \(D\mathbf{a}=\mathbf{v}\), solved via the Moore–Penrose pseudoinverse from the SVD of \(D\). Those fitted coefficients are stored in `a.txt`. This construction, and the resulting rotational Schrödinger problem, are developed in Chapter IV (*Effects of Confinement on the Estimation of Enthalpies and Entropies of Small Molecule Adsorption in Zeolites*) of *Ab Initio Methods for Modeling the Thermodynamics of Molecules Adsorbed in Zeolites* (UC Berkeley, 2022) — [escholarship.org/uc/item/2k30v4kq](https://escholarship.org/uc/item/2k30v4kq).
+and determining the coefficients $a_{LMK}$ by regression: sampled energies on an Euler-angle grid are fit in the least-squares sense as $D a = v$, solved via the Moore–Penrose pseudoinverse from the SVD of $D$. Those fitted coefficients are stored in `a.txt`. This construction, and the resulting rotational Schrödinger problem, are developed in Chapter IV (*Effects of Confinement on the Estimation of Enthalpies and Entropies of Small Molecule Adsorption in Zeolites*) of *Ab Initio Methods for Modeling the Thermodynamics of Molecules Adsorbed in Zeolites* (UC Berkeley, 2022) — [escholarship.org/uc/item/2k30v4kq](https://escholarship.org/uc/item/2k30v4kq).
 
-With rotational constants \(A\), \(B\), \(C\) and Ray's asymmetry parameter \(\kappa=(2B-A-C)/(A-C)\), the matrix elements are
+With rotational constants $A$, $B$, $C$ and Ray's asymmetry parameter $\kappa=(2B-A-C)/(A-C)$, the matrix elements are
 
 $$
 \begin{aligned}
 \langle lmk|\hat{H}|l'm'k'\rangle
 &=
-\delta_{ll'}\delta_{mm'}\delta_{kk'}\Biggl[
-\tfrac12(A+C)\,l(l+1)
-+\tfrac12(A-C)\,\kappa\,k^{2}
-\Biggr] \\
+\delta_{ll'}\delta_{mm'}\delta_{kk'}\left[
+\frac{1}{2}(A+C)\,l(l+1)
++\frac{1}{2}(A-C)\,\kappa\,k^{2}
+\right] \\
 &\quad
-+\delta_{ll'}\delta_{mm'}\delta_{k,k'+2}\,\tfrac14(C-A)
-\sqrt{\bigl[l(l+1)-k'(k'+1)\bigr]\bigl[l(l+1)-(k'+1)(k'+2)\bigr]} \\
++\delta_{ll'}\delta_{mm'}\delta_{k,k'+2}\,\frac{1}{4}(C-A)
+\sqrt{[l(l+1)-k'(k'+1)][l(l+1)-(k'+1)(k'+2)]} \\
 &\quad
-+\delta_{ll'}\delta_{mm'}\delta_{k,k'-2}\,\tfrac14(C-A)
-\sqrt{\bigl[l(l+1)-k(k+1)\bigr]\bigl[l(l+1)-(k+1)(k+2)\bigr]} \\
++\delta_{ll'}\delta_{mm'}\delta_{k,k'-2}\,\frac{1}{4}(C-A)
+\sqrt{[l(l+1)-k(k+1)][l(l+1)-(k+1)(k+2)]} \\
 &\quad
 +\sum_{LMK}a_{LMK}\sqrt{\frac{2l+1}{2l'+1}}
 \langle lm\,LM|l'm'\rangle
-\langle lk\,LK|l'k'\rangle\,.
+\langle lk\,LK|l'k'\rangle.
 \end{aligned}
 $$
 
-Here \(\langle j_1 m_1\, j_2 m_2 | j m\rangle\) denotes a Clebsch–Gordan coefficient, and \(a_{LMK}\) are the complex Wigner-basis potential coefficients from `a.txt`.
+Here $\langle j_1 m_1\, j_2 m_2 | j m\rangle$ denotes a Clebsch–Gordan coefficient, and $a_{LMK}$ are the complex Wigner-basis potential coefficients from `a.txt`.
 
-In the implementation, potential matrix elements are assembled with the `wignerSymbols` library via Wigner \(3j\) symbols. These are related to Clebsch–Gordan coefficients by
+In the implementation, potential matrix elements are assembled with the `wignerSymbols` library via Wigner $3j$ symbols. These are related to Clebsch–Gordan coefficients by
 
 $$
 \langle j_1 m_1\, j_2 m_2 | j_3 m_3\rangle
@@ -50,7 +50,7 @@ $$
 \begin{pmatrix}
 j_1 & j_2 & j_3 \\
 m_1 & m_2 & -m_3
-\end{pmatrix}\,.
+\end{pmatrix}.
 $$
 
 In particular, the coupling factors above are evaluated as
@@ -63,14 +63,14 @@ $$
 \begin{pmatrix}
 l & L & l' \\
 m & M & -m'
-\end{pmatrix}\,, \\
+\end{pmatrix}, \\
 \langle lk\,LK|l'k'\rangle
 &=
 (-1)^{l-L+k'}\sqrt{2l'+1}
 \begin{pmatrix}
 l & L & l' \\
 k & K & -k'
-\end{pmatrix}\,.
+\end{pmatrix}.
 \end{aligned}
 $$
 
@@ -89,9 +89,9 @@ corresponding to calls `WignerSymbols::wigner3j(l, L, l', m, M, -m')` and `Wigne
 | File | Contents |
 |------|----------|
 | `I.txt` | Principal moments of inertia (amu·Å²) |
-| `a.txt` | Complex SVD-fitted Wigner \(D\)-matrix potential coefficients \(a_{LMK}\) |
-| `lmax.txt` | Max \(L\) in the potential expansion |
-| `s.txt` | Symmetry number \(\sigma\) (where present) |
+| `a.txt` | Complex SVD-fitted Wigner $D$-matrix potential coefficients $a_{LMK}$ |
+| `lmax.txt` | Max $L$ in the potential expansion |
+| `s.txt` | Symmetry number $\sigma$ (where present) |
 | `Eref.txt` | Reference energy (where present) |
 
 ## Build
