@@ -23,32 +23,30 @@ $$
 \langle lmk|\hat{H}|l'm'k'\rangle
 &=
 \delta_{ll'}\delta_{mm'}\delta_{kk'}\left[
-\frac{1}{2}(A+C)\,l(l+1)
-+\frac{1}{2}(A-C)\,\kappa\,k^{2}
-\right] \\
+\frac{1}{2}(A+C)l(l+1)
++\frac{1}{2}(A-C)\kappa k^{2}
+\right] 
 &\quad
-+\delta_{ll'}\delta_{mm'}\delta_{k,k'+2}\,\frac{1}{4}(C-A)
-\sqrt{[l(l+1)-k'(k'+1)][l(l+1)-(k'+1)(k'+2)]} \\
++\delta_{ll'}\delta_{mm'}\delta_{k,k'+2}\frac{1}{4}(C-A)
+\sqrt{[l(l+1)-k'(k'+1)][l(l+1)-(k'+1)(k'+2)]} 
 &\quad
-+\delta_{ll'}\delta_{mm'}\delta_{k,k'-2}\,\frac{1}{4}(C-A)
-\sqrt{[l(l+1)-k(k+1)][l(l+1)-(k+1)(k+2)]} \\
++\delta_{ll'}\delta_{mm'}\delta_{k,k'-2}\frac{1}{4}(C-A)
+\sqrt{[l(l+1)-k(k+1)][l(l+1)-(k+1)(k+2)]} 
 &\quad
 +\sum_{LMK}a_{LMK}\sqrt{\frac{2l+1}{2l'+1}}
-\langle lm\,LM|l'm'\rangle
-\langle lk\,LK|l'k'\rangle.
+\langle lmLM|l'm'\rangle
+\langle lkLK|l'k'\rangle.
 \end{aligned}
 $$
 
-Here $\langle j_1 m_1\, j_2 m_2 | j m\rangle$ denotes a Clebsch–Gordan coefficient, and $a_{LMK}$ are the complex Wigner-basis potential coefficients from `a.txt`.
+Here $\langle j_1 m_1 j_2 m_2 | j m\rangle$ denotes a Clebsch–Gordan coefficient, and $a_{LMK}$ are the complex Wigner-basis potential coefficients from `a.txt`.
 
 ## Clebsch-Gordan coefficients
 
 In the implementation, potential matrix elements are assembled with the `wignerSymbols` library via Wigner $3j$ symbols. These are related to Clebsch–Gordan coefficients by
 
 $$
-\langle j_1 m_1\, j_2 m_2 | j_3 m_3\rangle
-=
-(-1)^{j_1-j_2+m_3}\sqrt{2j_3+1}
+\langle j_1 m_1 j_2 m_2 | j_3 m_3\rangle =(-1)^{j_1-j_2+m_3}\sqrt{2j_3+1}
 \begin{pmatrix}
 j_1 & j_2 & j_3 \\
 m_1 & m_2 & -m_3
@@ -59,14 +57,14 @@ In particular, the coupling factors above are evaluated as
 
 $$
 \begin{aligned}
-\langle lm\,LM|l'm'\rangle
+\langle lmLM|l'm'\rangle
 &=
 (-1)^{l-L+m'}\sqrt{2l'+1}
 \begin{pmatrix}
 l & L & l' \\
 m & M & -m'
 \end{pmatrix}, \\
-\langle lk\,LK|l'k'\rangle
+\langle lkLK|l'k'\rangle
 &=
 (-1)^{l-L+k'}\sqrt{2l'+1}
 \begin{pmatrix}
@@ -88,13 +86,15 @@ corresponding to calls `WignerSymbols::wigner3j(l, L, l', m, M, -m')` and `Wigne
 
 ## Data (per system directory under `data/`)
 
-| File | Contents |
-|------|----------|
-| `I.txt` | Principal moments of inertia (amu·Å²) |
-| `a.txt` | Complex SVD-fitted Wigner $D$-matrix potential coefficients $a_{LMK}$ |
-| `lmax.txt` | Max $L$ in the potential expansion |
-| `s.txt` | Symmetry number $\sigma$ (where present) |
-| `Eref.txt` | Reference energy (where present) |
+
+| File       | Contents                                                              |
+| ---------- | --------------------------------------------------------------------- |
+| `I.txt`    | Principal moments of inertia (amu·Å²)                                 |
+| `a.txt`    | Complex SVD-fitted Wigner $D$-matrix potential coefficients $a_{LMK}$ |
+| `lmax.txt` | Max $L$ in the potential expansion                                    |
+| `s.txt`    | Symmetry number $\sigma$ (where present)                              |
+| `Eref.txt` | Reference energy (where present)                                      |
+
 
 ## Build
 
